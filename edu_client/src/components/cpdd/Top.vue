@@ -2,15 +2,11 @@
     <div class="header-box">
         <div class="header">
             <div class="content">
-                <div class="logo full-left">
+                <div class="logo full-left" style="width: 200px;">
                     <router-link to="/"><img src="/static/image/logo.png" alt=""></router-link>
                 </div>
-                <ul class="nav full-left">
-                    <li><span>Java进阶之路</span></li>
-                    <li><span>大数据成功法门</span></li>
-                    <li><span>Python全栈</span></li>
-                    <li><span>人工智能的魅力</span></li>
-                    <li><span>百知教育</span></li>
+                <ul class="nav full-left" style="width: 600px;" v-for="(nav,key) in nav_list" :key="key">
+                    <li v-show="nav.position==1"><span>{{nav.title}}</span></li>
                 </ul>
                 <div class="login-bar full-right">
                     <div class="shop-cart full-left">
@@ -30,7 +26,31 @@
 
 <script>
     export default {
-        name: "Top"
+        name: "Top",
+        //获取导航栏的数据
+        data() {
+            return {
+                nav_list: [],  //轮播图的数据
+            }
+        },
+        methods: {
+            get_list_nav() {
+                this.$axios({
+                    url: 'http://127.0.0.1:9001/home/nav/',
+                    method: "get",
+                }).then(res => {
+                    // 当前请求的返回值可以通过res接受到
+                    console.log(res.data);
+                    this.nav_list = res.data;
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
+        },
+        //页面加载之前将数据获取并赋值给data
+        created() {
+            this.get_list_nav()
+        },
     }
 </script>
 

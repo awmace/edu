@@ -29,10 +29,7 @@ SECRET_KEY = '6g@1(x)w#(c18l8k)t_uozwbgzs*!)a((!oyncbu_1bbauq(ol'
 DEBUG = True
 
 # 允许访问的域名
-ALLOWED_HOSTS = [
-    # 'api.npf.com',
-    # 'vue.npf.com'  用于前端
-]
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -45,6 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    # xadmin配置
+    'xadmin',
+    'crispy_forms',
+    'reversion',
+
     'home',
 ]
 
@@ -87,7 +89,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "edu_api",
-        'HOST': "localhost",
+        'HOST': "127.0.0.1",
         'USER': "root",
         'PASSWORD': '123456',
         'PORT': 3306
@@ -115,9 +117,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
