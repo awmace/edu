@@ -12,6 +12,12 @@ Vue.prototype.$axios = axios;
 import Element from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css'
 
+// 导入极验
+import "../static/js/gt"
+
+// 全局css
+import "../static/css/global.css"
+
 Vue.use(Element);
 
 Vue.config.productionTip = false

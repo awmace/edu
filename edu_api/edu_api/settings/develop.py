@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
+import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 修改默认的子应用的目录后，需要将该目录设置为全局的导包路径
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'reversion',
 
     'home',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -195,4 +197,26 @@ LOGGING = {
 REST_FRAMEWORK = {
     # 全局异常配置
     "EXCEPTION_HANDLER": "utils.exceptions.exception_handler",
+    # 添加认证方式
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
 }
+
+# jwt配置
+JWT_AUTH = {
+    # 有效时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
+    # 自定义jwt返回值的格式方法
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'user.utils.jwt_response_payload_handler',
+}
+
+# 注册自定义用户模型 格式必须是app.表明
+AUTH_USER_MODEL = 'user.UserInfo'
+
+# 自定义多条件登录
+AUTHENTICATION_BACKENDS = [
+    'user.utils.UserAuthBackend',
+]

@@ -2,19 +2,35 @@
     <div class="header-box">
         <div class="header">
             <div class="content">
-                <div class="logo full-left" style="width: 200px;">
+                <div class="logo full-left">
                     <router-link to="/"><img src="/static/image/logo.png" alt=""></router-link>
                 </div>
-                <ul class="nav full-left" style="width: 600px;" v-for="(nav,key) in nav_list" :key="key">
-                    <li v-show="nav.position==1"><span>{{nav.title}}</span></li>
+                <ul class="nav full-left">
+                    <li v-for="(nav,key) in nav_list" :key="key" v-show="nav.position==1">
+                        <span v-if="nav.is_site"><a :href="nav.link">{{nav.title}}</a></span>
+                        <span v-else><router-link :to="nav.link">{{nav.title}}</router-link></span>
+                    </li>
                 </ul>
-                <div class="login-bar full-right">
+                <!--用户登录的情况下-->
+                <div class="login-bar full-right" v-if="token">
                     <div class="shop-cart full-left">
                         <img src="/static/image/" alt="">
                         <span><router-link to="/cart">购物车</router-link></span>
                     </div>
                     <div class="login-box full-left">
-                        <span>登录</span>
+                        <router-link to="/login"><span>个人中心</span></router-link>
+                        &nbsp;|&nbsp;
+                        <span @click="user_exit">退出登录</span>
+                    </div>
+                </div>
+                <!--用户未登录的情况下-->
+                <div class="login-bar full-right" v-else>
+                    <div class="shop-cart full-left">
+                        <img src="/static/image/" alt="">
+                        <span><router-link to="/cart">购物车</router-link></span>
+                    </div>
+                    <div class="login-box full-left">
+                        <router-link to="/login"><span>登录</span></router-link>
                         &nbsp;|&nbsp;
                         <span>注册</span>
                     </div>
@@ -31,9 +47,18 @@
         data() {
             return {
                 nav_list: [],  //轮播图的数据
+                token: '',
             }
         },
         methods: {
+            get_token() {
+                //判断登录状态
+                this.token = sessionStorage.token
+                // if (!this.token){
+                //     this.token=localStorage.token
+                // }
+                console.log(this.token)
+            },
             get_list_nav() {
                 this.$axios({
                     url: 'http://127.0.0.1:9001/home/nav/',
@@ -46,9 +71,15 @@
                     console.log(error);
                 })
             },
+            user_exit(){
+                sessionStorage.removeItem('token')
+                // localStorage.removeItem('token')
+                this.$router.push('/login')
+            }
         },
         //页面加载之前将数据获取并赋值给data
         created() {
+            this.get_token()
             this.get_list_nav()
         },
     }
@@ -81,7 +112,7 @@
     .header .content .logo {
         height: 80px;
         line-height: 80px;
-        margin-right: 30px;
+        margin-right: 50px;
         cursor: pointer; /* 设置光标的形状为爪子 */
     }
 
@@ -97,7 +128,6 @@
         font-size: 16px;
         color: #4a4a4a;
         cursor: pointer;
-        list-style: none;
     }
 
     .header .nav li span {
