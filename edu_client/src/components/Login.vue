@@ -48,7 +48,7 @@
             return {
                 username: '',
                 password: '',
-                remember_me: false,
+                remember_me: '',
             }
 
         },
@@ -61,7 +61,7 @@
             }
             this.username = sessionStorage.username
             this.password = sessionStorage.password
-            this.remember_me = true
+            this.remember_me = sessionStorage.remember_me
         },
         methods: {
             // 点击登录时  弹出验证码框 当验证码成功验证后  才可以发起登录请求
@@ -136,6 +136,7 @@
                     sessionStorage.exits = true
                     if (this.remember_me) {
                         //勾选后存储用户名和密码,删除不记住我时的token
+                        sessionStorage.remember_me=true
                         sessionStorage.username = this.username
                         sessionStorage.password = this.password
                         // sessionStorage.token=res.data.token
@@ -153,6 +154,8 @@
                         message: '恭喜你，登录成功',
                         type: 'success',
                     });
+                    // 给首页显示用的username
+                    localStorage.username=this.username
                     //登录成功后返回首页
                     this.$router.push('/')
                 }).catch(error => {

@@ -21,6 +21,8 @@
                         <router-link to="/login"><span>个人中心</span></router-link>
                         &nbsp;|&nbsp;
                         <span @click="user_exit">退出登录</span>
+                        &nbsp;|&nbsp;
+                        <span>用户名:  {{username}}</span>
                     </div>
                 </div>
                 <!--用户未登录的情况下-->
@@ -30,9 +32,9 @@
                         <span><router-link to="/cart">购物车</router-link></span>
                     </div>
                     <div class="login-box full-left">
-                        <router-link to="/login"><span>登录</span></router-link>
+                        <router-link to="/home/login"><span>登录</span></router-link>
                         &nbsp;|&nbsp;
-                        <span>注册</span>
+                        <router-link to="/user/register">注册</router-link>
                     </div>
                 </div>
             </div>
@@ -48,6 +50,7 @@
             return {
                 nav_list: [],  //轮播图的数据
                 token: '',
+                username:'',//用户名
             }
         },
         methods: {
@@ -57,7 +60,6 @@
                 // if (!this.token){
                 //     this.token=localStorage.token
                 // }
-                console.log(this.token)
             },
             get_list_nav() {
                 this.$axios({
@@ -65,16 +67,19 @@
                     method: "get",
                 }).then(res => {
                     // 当前请求的返回值可以通过res接受到
-                    console.log(res.data);
                     this.nav_list = res.data;
+                    this.username= localStorage.username
                 }).catch(error => {
                     console.log(error);
                 })
             },
             user_exit(){
+                // 删除首页用户名显示内容
+                localStorage.removeItem('username')
+                // 删除token:登录状态
                 sessionStorage.removeItem('token')
                 // localStorage.removeItem('token')
-                this.$router.push('/login')
+                this.$router.push('/home/login')
             }
         },
         //页面加载之前将数据获取并赋值给data
