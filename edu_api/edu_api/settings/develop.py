@@ -48,8 +48,14 @@ INSTALLED_APPS = [
     'crispy_forms',
     'reversion',
 
+    # 富文本编辑器配置
+    'ckeditor',  # 富文本编辑器
+    'ckeditor_uploader',  # 富文本编辑器的上传模块
+    'django_filters',
     'home',
     'user',
+    'course',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -208,7 +214,7 @@ REST_FRAMEWORK = {
 # jwt配置
 JWT_AUTH = {
     # 有效时间
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
     # 自定义jwt返回值的格式方法
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'user.utils.jwt_response_payload_handler',
 }
@@ -243,4 +249,24 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+    # 购物车的存储位置：c代表3
+    "cart": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 连接的redis所在服务的端口以及ip
+        "LOCATION": "redis://127.0.0.1:7000/3",
+        # 使用客户端的方式
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
 }
+
+# devlope 配置
+KEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',  # 展示哪些工具栏
+        'height': 300,  # 编辑器的高度
+        'width': 300,
+    },
+}
+CKEDITOR_UPLOAD_PATH = ''  # 富文本上传图片的路径，为空代表使用django的路径上传

@@ -16,3 +16,4 @@ SINGLE_SEND_URL = "https://sms.yunpian.com/v2/sms/single_send.json"
 # API_KEY = "40d6180426417bfc57d0744a362dc108"
 # 我的账户
 API_KEY = "fd7e99cdea8b83eee640bdee6dfa6aca"
+IMAGE_SRC = "http://127.0.0.1:9001"

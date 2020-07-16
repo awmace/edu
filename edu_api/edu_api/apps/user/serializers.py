@@ -54,23 +54,24 @@ class UserModelSerializer(serializers.ModelSerializer):
         # 验证手机号短信验证码是否正确
         redis_connection = get_redis_connection("npf")
         phone_code = redis_connection.get("mobile_%s" % phone)
+
+        # 输出前端发送过来的验证码和短信验证码
+        print(phone_code.decode(), sms_code)
+
         # redis取出的是二进制字符串，维持编码一致性需要解码
         if phone_code.decode() != sms_code:
-            # 为了防止暴力破解 可以再次设置一个手机号只能验证10次  累加
+            # 为了防止暴力破解 可以再次设置一个手机号只能验证10次
             redis_connection.setnx("%s" % phone, '1')
             num = int(redis_connection.get("%s" % phone).decode())
-            print(num)
+            print(num)  # 输出验证错误次数
             if num < 11:
                 redis_connection.incr("%s" % phone)
             else:
                 # 伪删除验证码
                 redis_connection.append("mobile_%s" % phone, 'knms')
-                # 验证次数初始化
-                redis_connection.set("%s" % phone, '1')
                 raise serializers.ValidationError("超出验证次数,验证码失效")
 
             raise serializers.ValidationError("验证码不一致")
-
         # 成功后需要将验证码删除：这里是伪删除，追加了一个字符串
         redis_connection.append("mobile_%s" % phone, 'knms')
 
