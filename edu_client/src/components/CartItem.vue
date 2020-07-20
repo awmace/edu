@@ -4,19 +4,18 @@
             <el-checkbox class="my_el_checkbox" v-model="course.selected"></el-checkbox>
         </div>
         <div class="cart_column column_2">
-            <img src="/static/image/python.jpg" alt="">
+            <img :src="course.course_img" alt="">
             <span><router-link :to="'/course/detail/'+course.id">{{course.name}}</router-link></span>
         </div>
         <div class="cart_column column_3">
-            <el-select v-model="expire" size="mini" placeholder="请选择购买有效期" class="my_el_select">
-                <el-option label="1个月有效" value="30" key="30"></el-option>
-                <el-option label="2个月有效" value="60" key="60"></el-option>
-                <el-option label="3个月有效" value="90" key="90"></el-option>
-                <el-option label="永久有效" value="10000" key="10000"></el-option>
+            <el-select v-model="course.expire_id" size="mini" placeholder="请选择购买有效期" class="my_el_select">
+                <el-option
+                    :label="item.expire_text" :value="item.id" :key="item.id" v-for="item in course.expire_list">
+                </el-option>
             </el-select>
         </div>
-        <div class="cart_column column_4">¥{{course.price.toFixed(2)}}</div>
-        <div class="cart_column column_4" @click="">删除</div>
+        <div class="cart_column column_4">¥{{course.real_price}}</div>
+        <div class="cart_column column_4" @click="delete_course(course.id)">删除</div>
     </div>
 </template>
 
@@ -25,7 +24,7 @@
         name: "CartItem",
         data() {
             return {
-                expire: '有效期',
+                expire: '1个月有效',
             }
         },
         //接收父组件传递过来的参数
@@ -35,9 +34,33 @@
             'course.selected': function () {
                 //当勾选状态改变时，向后端发送请求
                 this.check_select()
+            },
+            // 切换课程有效期
+            'course.expire_id': function () {
+                // 后台发送请求切换状态
+                this.change_expire()
             }
         },
         methods: {
+            //删除购物车商品
+            delete_course(course_id) {
+                console.log(course_id)
+                let token = sessionStorage.token
+
+                this.$axios.delete('http://127.0.0.1:9001/cart/rmcart/'+course_id+'/', {
+                    headers: {
+                        //提交token必须在请求头声明token,jwt后必须有空格(通过空格截取jwt和token)
+                        'Authorization': 'jwt ' + token,
+                    }
+                }).then(res => {
+                    this.$message.success(res.data.message)
+
+                    this.$emit('delete_course')
+
+                }).catch(error => {
+                    this.$message.error(error.response)
+                })
+            },
             //状态切换
             check_select() {
                 let token = sessionStorage.token
@@ -52,10 +75,37 @@
                     }
                 }).then(res => {
                     this.$message.success(res.data.message)
+
+                    this.$emit('change_select')
+
                 }).catch(error => {
                     this.$message.error(error.response)
                 })
-            }
+            },
+
+            //有效期切换
+            change_expire() {
+                let token = sessionStorage.token;
+
+                this.$axios.put('http://127.0.0.1:9001/cart/option/', {
+                    expire_id: this.course.expire_id,
+                    course_id: this.course.id
+                }, {
+                    headers: {
+                        "Authorization": "jwt " + token,
+                    }
+                }).then(response => {
+                    console.log(response.data);
+
+                    // 更新切换有效期后课程的价格
+                    this.course.real_price = response.data.real_price;
+
+                    this.$message.success("切换有效期成功");
+                    this.$emit('change_select')
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
         }
     }
 </script>

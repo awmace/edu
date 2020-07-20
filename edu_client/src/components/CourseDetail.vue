@@ -20,12 +20,16 @@
                     <h3 class="course-name">{{course.name}}</h3>
                     <p class="data">{{course.students}}人在学&nbsp;&nbsp;&nbsp;&nbsp;共{{course.lessons}}课时/{{course.lessons==course.pub_lessons?'更新完成':`已更新${course.pub_lessons}课时`}}&nbsp;&nbsp;&nbsp;&nbsp;难度：{{course.level_name}}</p>
                     <div class="sale-time">
-                        <p class="sale-type">限时免费</p>
-                        <p class="expire">距离结束：仅剩 110天 13小时 33分 <span class="second">08</span> 秒</p>
+                        <p class="sale-type">{{course.discount_name}}</p>
+                        <p class="expire">距离结束：
+                            仅剩{{parseInt(course.active_time/(24*3600))}}天
+                            {{parseInt(course.active_time/3600%24)}}小时
+                            {{parseInt(course.active_time/60%60)}}分钟
+                            <span class="second">{{parseInt(course.active_time%60)}}</span>秒</p>
                     </div>
                     <p class="course-price">
                         <span>活动价</span>
-                        <span class="discount">¥0.00</span>
+                        <span class="discount">¥{{course.real_price}}</span>
                         <span class="original">¥{{course.price}}</span>
                     </p>
                     <div class="buy">
@@ -221,6 +225,16 @@
                     //播放的视频
                     this.playerOptions.sources[0].src = res.data.course_video;
                     this.playerOptions.poster = res.data.course_img
+
+                    if (this.course.active_time > 0) {
+                        let timer = setInterval(() => {
+                            if (this.course.active_time > 1) {
+                                this.course.active_time -= 1
+                            } else {
+                                clearInterval(timer)
+                            }
+                        }, 1000)
+                    }
                 }).catch(error => {
                     console.log(error.response)
                 })

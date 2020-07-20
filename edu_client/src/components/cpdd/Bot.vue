@@ -23,7 +23,6 @@
                     method: "get",
                 }).then(res => {
                     // 当前请求的返回值可以通过res接受到
-                    console.log(res.data);
                     this.nav_list = res.data;
                 }).catch(error => {
                     console.log(error);

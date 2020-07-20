@@ -1,6 +1,6 @@
 <template>
     <div class="course">
-        <Header></Header>
+        <Top></Top>
         <div class="main">
             <!-- 筛选条件 -->
             <div class="condition">
@@ -50,8 +50,8 @@
 
                         </ul>
                         <div class="pay-box">
-                            <span class="discount-type">限时免费</span>
-                            <span class="discount-price">￥0.00元</span>
+                            <span class="discount-type">{{course.discount_name}}</span>
+                            <span class="discount-price">￥{{course.real_price}}元</span>
                             <span class="original-price">原价：{{course.price}}元</span>
                             <span class="buy-now">立即购买</span>
                         </div>
@@ -68,13 +68,19 @@
             @size-change="size_change"
             :total="total">
         </el-pagination>
-        <Footer></Footer>
+        <Bot></Bot>
     </div>
 </template>
 
 <script>
+    import Top from "./cpdd/Top";
+    import Bot from "./cpdd/Bot";
+
     export default {
         name: "Course",
+        components: {
+            Top, Bot
+        },
         data() {
             return {
                 category_list: [],//课程分类信息

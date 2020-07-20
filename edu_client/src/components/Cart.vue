@@ -4,7 +4,7 @@
         <div class="cart_info">
             <div class="cart_title">
                 <span class="text">我的购物车</span>
-                <span class="total">共4门课程</span>
+                <span class="total">共{{cart_list.length}}门课程</span>
             </div>
             <div class="cart_table">
                 <div class="cart_head_row">
@@ -15,14 +15,15 @@
                     <span class="do_more">操作</span>
                 </div>
                 <div class="cart_course_list">
-                    <CartItem v-for="(course,index) in cart_list" :key="index" :course="course"></CartItem>
+                    <CartItem v-for="(course,index) in cart_list" :key="index" :course="course"
+                    @change_select="cart_list_price" @delete_course="delete_course(index)"></CartItem>
                 </div>
                 <div class="cart_footer_row">
                     <span class="cart_select"><label> <el-checkbox
                     ></el-checkbox><span>全选</span></label></span>
                     <span class="cart_delete"><i class="el-icon-delete"></i> <span>删除</span></span>
-                    <span class="goto_pay">去结算</span>
-                    <span class="cart_total">总计：¥0.0</span>
+                    <router-link class="goto_pay" to="/order">去结算</router-link>
+                    <span class="cart_total">总计：¥{{total_price}}</span>
                 </div>
             </div>
         </div>
@@ -45,7 +46,8 @@
         },
         data() {
             return {
-                cart_list:[],
+                cart_list: [],
+                total_price: 0.00,  //购物车勾选商品的总价
             }
         },
         methods: {
@@ -74,13 +76,35 @@
                         'Authorization': 'jwt ' + token,
                     }
                 }).then(res => {
-                    this.cart_list=res.data
+                    this.cart_list = res.data
                     //更新上方购物车商品数量
-                    this.$store.commit('add_cart',this.cart_list.length)
+                    this.$store.commit('add_cart', this.cart_list.length)
+
+                    //获取购物车信息成功后计算商品总价
+                    this.cart_list_price()
                 }).catch(error => {
                     console.log(error)
                 })
             },
+            //计算购物车商品总价
+            cart_list_price() {
+                let total = 0;
+                this.cart_list.forEach((course, key) => {
+                    //判断商品是否被选中了
+                    if (course.selected){
+                        total+=parseInt(course.real_price);
+                    }
+                    this.total_price=total
+                    console.log(this.total_price)
+                })
+            },
+            delete_course(index){
+                this.cart_list.splice(index,1);
+                //删除后更新购物车课程数量
+                this.$store.commit('add_cart',this.cart_list.length);
+                //重新计算商品总价
+                this.cart_list_price()
+            }
         }
     }
 </script>

@@ -15,7 +15,7 @@ class CourseTeacherSerializer(ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ("id", "name", "title", "signature")
+        fields = ["id", "name", "title", "signature"]
 
 
 class CourseModelSerializer(ModelSerializer):
@@ -26,24 +26,26 @@ class CourseModelSerializer(ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ["id", "name", "course_img", "students", "lessons", "pub_lessons", "price", "teacher", "lesson_list"]
+        fields = ["id", "name", "course_img", "students", "lessons", "pub_lessons", "price", "teacher", "lesson_list",
+                  "discount_name", "real_price"]
 
 
 class TeacherModelSerializer(ModelSerializer):
     # 课程对应的老师的信息
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'role', 'signature', 'image', 'brief')
+        fields = ['id', 'name', 'role', 'signature', 'image', 'brief']
 
 
 class CourseDetailModerSerializer(ModelSerializer):
     # 序列化器嵌套只能嵌套有外键关系的字段
     teacher = TeacherModelSerializer()
 
+    # discount_name:优惠活动的名称
     class Meta:
         model = Course
-        fields = ('id', 'name', 'lessons', 'students', 'pub_lessons', 'price', 'course_img', 'level_name', 'teacher',
-                  'course_video', 'brief_html')
+        fields = ['id', 'name', 'lessons', 'students', 'pub_lessons', 'price', 'course_img', 'level_name', 'teacher',
+                  'course_video', 'brief_html', 'discount_name', "real_price", "active_time"]
 
 
 class CourseLessonModelSerializer(ModelSerializer):
