@@ -133,10 +133,12 @@
                     }
                 }).then(res => {
                     sessionStorage.token = res.data.token
+                    //存储当前时间戳:用于判断token是否过期
+                    sessionStorage.time = Date.parse(new Date()) / 1000
                     sessionStorage.exits = true
                     if (this.remember_me) {
                         //勾选后存储用户名和密码,删除不记住我时的token
-                        sessionStorage.remember_me=true
+                        sessionStorage.remember_me = true
                         sessionStorage.username = this.username
                         sessionStorage.password = this.password
                         // sessionStorage.token=res.data.token
@@ -155,7 +157,7 @@
                         type: 'success',
                     });
                     // 给首页显示用的username
-                    localStorage.username=this.username
+                    localStorage.username = this.username
                     //登录成功后返回首页
                     this.$router.push('/')
                 }).catch(error => {

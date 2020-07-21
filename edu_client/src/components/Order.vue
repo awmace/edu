@@ -73,14 +73,24 @@
                         //提交token必须在请求头声明token,jwt后必须有空格(通过空格截取jwt和token)
                         'Authorization': 'jwt ' + token,
                     }
-                }).then(res=>{
-                    this.$message.success('订单生成成功')
-                }).catch(error=>{
+                }).then(res => {
+                    this.$message.success('订单生成成功,即将跳转到登录页面')
+                    //在订单生成成功后，向支付宝发起获取生成支付连接的url
+                    this.$axios.get('http://127.0.0.1:9001/payments/ali_pay/', {
+                        params: {
+                            order_number: res.data.order_number,
+                        }
+                    }).then(res => {
+                        //返回支付链接并跳转
+                        location.href = res.data
+
+                    }).catch(error => {
+                        this.$message.error(error.response.data)
+                        console.log(error.response)
+                    })
+                }).catch(error => {
                     this.$message.error('订单生成失败')
                 })
-                //更新购物车商品数量
-                console.log(this.course_list.length)
-                this.$store.commit('add_cart',1);
             },
 
             check_token() {
@@ -94,7 +104,26 @@
                         }
                     });
                     return false
+                } else {
+                    //获取token生成时的时间戳：秒
+                    let ftime = parseInt(sessionStorage.time)
+                    //获取当前时间戳
+                    let ltime = Date.parse(new Date()) / 1000;
+                    if ((ltime - ftime) > 3000) {
+                        // 删除token和登录记录
+                        sessionStorage.removeItem('token')
+                        sessionStorage.removeItem('exits')
+                        let self = this;
+                        this.$confirm('身份验证已失效，请重新登录', {
+                            callback() {
+                                //跳转到登录页面
+                                self.$router.push('/home/login');
+                            }
+                        });
+                        return false
+                    }
                 }
+
                 return token;
             },
             //获取购物车已勾选商品信息用于订单页面
@@ -110,9 +139,8 @@
                     this.course_list = res.data.course_list
                     this.real_price = res.data.total_price
                     this.user_id = res.data.user_id
-                    console.log(res.data)
                 }).catch(error => {
-                    this.$message.error(error.response)
+                    this.$message.error('111')
                 })
             }
         },

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'course',
     'cart',
     'order',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -271,3 +272,19 @@ KEDITOR_CONFIGS = {
     },
 }
 CKEDITOR_UPLOAD_PATH = ''  # 富文本上传图片的路径，为空代表使用django的路径上传
+
+
+# 支付宝配置参数信息
+ALIAPY_CONFIG = {
+    # "gateway_url": "https://openapi.alipay.com/gateway.do?", # 真实支付宝网关地址
+    "gateway_url": "https://openapi.alipaydev.com/gateway.do?",  # 沙箱支付宝网关地址
+    "appid": "2016102500761005",
+    "app_notify_url": None,
+    "app_private_key_path": open(os.path.join(BASE_DIR, "apps/payments/keys/app_private_key.pem")).read(),
+    "alipay_public_key_path": open(os.path.join(BASE_DIR, "apps/payments/keys/app_public_key.pem")).read(),
+    "sign_type": "RSA2",
+    "debug": False,
+    # "return_url": "http://www.baizhistore.cn:8080/payments/result",  # 同步回调地址
+    "return_url": "http://localhost:8080/payments/result",  # 同步回调地址
+    "notify_url": "http://api.baizhishop.com:9001/payments/result",  # 异步结果通知
+}

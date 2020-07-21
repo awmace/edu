@@ -23,7 +23,7 @@
                         <li class="price" @click="change_order_type('price')" :class="change_order_class('price')">价格
                         </li>
                     </ul>
-                    <p class="condition-result">共21个课程</p>
+                    <p class="condition-result">共{{total}}个课程</p>
                 </div>
 
             </div>

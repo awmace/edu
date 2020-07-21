@@ -95,7 +95,6 @@
                         total+=parseInt(course.real_price);
                     }
                     this.total_price=total
-                    console.log(this.total_price)
                 })
             },
             delete_course(index){
