@@ -125,7 +125,8 @@
         data() {
             return {
                 wen: '',        //留言框
-                wen_list: localStorage.wens ? JSON.parse(localStorage.wens) : [],  //留言板
+                //wen_list: localStorage.wens ? JSON.parse(localStorage.wens) : [],  //留言板
+                wen_list: [],
                 course_id: 1,
                 course: {
                     teacher: {},
@@ -164,13 +165,35 @@
                         }
                     });
                     return false
+                } else {
+                    //获取token生成时的时间戳：秒
+                    let ftime = parseInt(sessionStorage.time)
+                    //获取当前时间戳
+                    let ltime = Date.parse(new Date()) / 1000;
+                    if ((ltime - ftime) > 300) {
+                        // 删除token和登录记录
+                        sessionStorage.removeItem('token')
+                        sessionStorage.removeItem('exits')
+                        let self = this;
+                        this.$confirm('身份验证已失效，请重新登录', {
+                            callback() {
+                                //跳转到登录页面
+                                self.$router.push('/home/login');
+                            }
+                        });
+                        return false
+                    }
                 }
+
                 return token;
             },
             //添加到购物车
             addCard() {
                 //添加商品前用户必须已经登录：登录校验
                 let token = this.check_token()
+                if (!token) {
+                    return 0
+                }
                 //发起请求添加商品
                 this.$axios.post('http://127.0.0.1:9001/cart/option/', {
                         'course_id': this.course_id,
@@ -197,7 +220,7 @@
                     //添加到留言板
                     this.wen_list.push(wen);
                     //持续化
-                    localStorage.wens = JSON.stringify(this.wen_list);
+                    localStorage.setItem(this.course_id, JSON.stringify(this.wen_list))
                     //清空留言框
                     this.wen = ''
                 }
@@ -258,6 +281,10 @@
             },
             onPlayerPause(event) {
 
+            },
+            get_wen() {
+                console.log(this.course_id)
+                this.wen_list = localStorage.getItem(this.course_id) ? JSON.parse(localStorage.getItem(this.course_id)) : []   //留言板
             }
         },
         created() {
@@ -265,6 +292,8 @@
             this.get_course_id()
             this.get_course_detail()
             this.get_course_chapter()
+            //获取留言板内容
+            this.get_wen()
         },
         components: {
             videoPlayer, Top, Bot

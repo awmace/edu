@@ -66,31 +66,33 @@
             //生成订单
             payOrder() {
                 let token = this.check_token()
-                this.$axios.post('http://127.0.0.1:9001/order/option/', {
-                    pay_type: '1',
-                }, {
-                    headers: {
-                        //提交token必须在请求头声明token,jwt后必须有空格(通过空格截取jwt和token)
-                        'Authorization': 'jwt ' + token,
-                    }
-                }).then(res => {
-                    this.$message.success('订单生成成功,即将跳转到登录页面')
-                    //在订单生成成功后，向支付宝发起获取生成支付连接的url
-                    this.$axios.get('http://127.0.0.1:9001/payments/ali_pay/', {
-                        params: {
-                            order_number: res.data.order_number,
+                if (token) {
+                    this.$axios.post('http://127.0.0.1:9001/order/option/', {
+                        pay_type: '1',
+                    }, {
+                        headers: {
+                            //提交token必须在请求头声明token,jwt后必须有空格(通过空格截取jwt和token)
+                            'Authorization': 'jwt ' + token,
                         }
                     }).then(res => {
-                        //返回支付链接并跳转
-                        location.href = res.data
+                        this.$message.success('订单生成成功,即将跳转到登录页面')
+                        //在订单生成成功后，向支付宝发起获取生成支付连接的url
+                        this.$axios.get('http://127.0.0.1:9001/payments/ali_pay/', {
+                            params: {
+                                order_number: res.data.order_number,
+                            }
+                        }).then(res => {
+                            //返回支付链接并跳转
+                            location.href = res.data
 
+                        }).catch(error => {
+                            this.$message.error(error.response.data.message)
+                            console.log(error.response)
+                        })
                     }).catch(error => {
-                        this.$message.error(error.response.data)
-                        console.log(error.response)
+                        this.$message.error(error.response.data.message)
                     })
-                }).catch(error => {
-                    this.$message.error('订单生成失败')
-                })
+                }
             },
 
             check_token() {
@@ -109,7 +111,7 @@
                     let ftime = parseInt(sessionStorage.time)
                     //获取当前时间戳
                     let ltime = Date.parse(new Date()) / 1000;
-                    if ((ltime - ftime) > 3000) {
+                    if ((ltime - ftime) > 300) {
                         // 删除token和登录记录
                         sessionStorage.removeItem('token')
                         sessionStorage.removeItem('exits')

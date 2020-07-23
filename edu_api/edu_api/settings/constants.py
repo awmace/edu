@@ -13,7 +13,7 @@ MOBILE_EXPIRE_TIME = 10 * 60
 SINGLE_SEND_URL = "https://sms.yunpian.com/v2/sms/single_send.json"
 # 发送短信的AP IKEY
 # 老师的账户
-# API_KEY = "40d6180426417bfc57d0744a362dc108"
+API_KEY = "40d6180426417bfc57d0744a362dc108"
 # 我的账户
-API_KEY = "fd7e99cdea8b83eee640bdee6dfa6aca"
+# API_KEY = "fd7e99cdea8b83eee640bdee6dfa6aca"
 IMAGE_SRC = "http://127.0.0.1:9001"

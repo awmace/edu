@@ -44,10 +44,12 @@
         methods: {
             //删除购物车商品
             delete_course(course_id) {
-                console.log(course_id)
-                let token = sessionStorage.token
+                let token = this.check_token()
+                if (!token) {
+                    return false
+                }
 
-                this.$axios.delete('http://127.0.0.1:9001/cart/rmcart/'+course_id+'/', {
+                this.$axios.delete('http://127.0.0.1:9001/cart/rmcart/' + course_id + '/', {
                     headers: {
                         //提交token必须在请求头声明token,jwt后必须有空格(通过空格截取jwt和token)
                         'Authorization': 'jwt ' + token,
@@ -58,12 +60,15 @@
                     this.$emit('delete_course')
 
                 }).catch(error => {
-                    this.$message.error(error.response)
+                    this.$message.error(error.response.data.message)
                 })
             },
             //状态切换
             check_select() {
-                let token = sessionStorage.token
+                let token = this.check_token()
+                if (!token) {
+                    return false
+                }
 
                 this.$axios.patch('http://127.0.0.1:9001/cart/option/', {
                     selected: this.course.selected,
@@ -79,14 +84,16 @@
                     this.$emit('change_select')
 
                 }).catch(error => {
-                    this.$message.error(error.response)
+                    this.$message.error(error.response.data.message)
                 })
             },
 
             //有效期切换
             change_expire() {
-                let token = sessionStorage.token;
-
+                let token = this.check_token()
+                if (!token) {
+                    return false
+                }
                 this.$axios.put('http://127.0.0.1:9001/cart/option/', {
                     expire_id: this.course.expire_id,
                     course_id: this.course.id
@@ -103,8 +110,41 @@
                     this.$message.success("切换有效期成功");
                     this.$emit('change_select')
                 }).catch(error => {
-                    console.log(error);
+                    this.$message.error(error.response.data.message)
                 })
+            },
+            check_token() {
+                let token = sessionStorage.token;
+                if (!token) {
+                    let self = this;
+                    this.$confirm('对不起，请登录后再添加购物车', {
+                        callback() {
+                            //跳转到登录页面
+                            self.$router.push('/home/login');
+                        }
+                    });
+                    return false
+                } else {
+                    //获取token生成时的时间戳：秒
+                    let ftime = parseInt(sessionStorage.time)
+                    //获取当前时间戳
+                    let ltime = Date.parse(new Date()) / 1000;
+                    if ((ltime - ftime) > 300) {
+                        // 删除token和登录记录
+                        sessionStorage.removeItem('token')
+                        sessionStorage.removeItem('exits')
+                        let self = this;
+                        this.$confirm('身份验证已失效，请重新登录', {
+                            callback() {
+                                //跳转到登录页面
+                                self.$router.push('/home/login');
+                            }
+                        });
+                        return false
+                    }
+                }
+
+                return token;
             },
         }
     }

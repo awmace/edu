@@ -19,17 +19,19 @@ class Message(object):
         :param code: 随机验证码
         :return:
         """
+        print('111')
         params = {
             "apikey": self.api_key,
             'mobile': phone,
             'text': "【毛信宇test】您的验证码是{code}。如非本人操作，请忽略本短信".format(code=code)
             # 'text': "【牛鹏飞test】您的验证码是{code}。如非本人操作，请忽略本短信".format(code=code)
         }
-
+        print('222')
         # 设置当前验证码验证次数为1(限制为10).
         redis_connection = get_redis_connection("npf")
         redis_connection.set("%s" % phone, '1')
         # 可以发送http请求
+        print('333')
         req = requests.post(self.single_send_url, data=params)
         print(req)
 

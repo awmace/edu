@@ -63,13 +63,35 @@
                         }
                     });
                     return false
+                } else {
+                    //获取token生成时的时间戳：秒
+                    let ftime = parseInt(sessionStorage.time)
+                    //获取当前时间戳
+                    let ltime = Date.parse(new Date()) / 1000;
+                    if ((ltime - ftime) > 300) {
+                        // 删除token和登录记录
+                        sessionStorage.removeItem('token')
+                        sessionStorage.removeItem('exits')
+                        let self = this;
+                        this.$confirm('身份验证已失效，请重新登录', {
+                            callback() {
+                                //跳转到登录页面
+                                self.$router.push('/home/login');
+                            }
+                        });
+                        return false
+                    }
                 }
+
                 return token;
             },
             //获取购物车的信息
             get_cart() {
                 // 判断用户是否登录:返回的是token
                 let token = this.check_token()
+                if (!token){
+                    return false
+                }
                 this.$axios.get('http://127.0.0.1:9001/cart/option/', {
                     headers: {
                         //提交token必须在请求头声明token,jwt后必须有空格(通过空格截取jwt和token)
@@ -83,7 +105,7 @@
                     //获取购物车信息成功后计算商品总价
                     this.cart_list_price()
                 }).catch(error => {
-                    console.log(error)
+                    this.$message.error(error.response.data.message)
                 })
             },
             //计算购物车商品总价

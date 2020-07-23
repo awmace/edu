@@ -57,6 +57,8 @@
                     this.pay_time=res.data.pay_time
                 }).catch(error => {
                     this.$message.error(error.response.data.message)
+                    //失败不能停留到该页面
+                    this.$router.push('/cart')
                 })
             },
         }

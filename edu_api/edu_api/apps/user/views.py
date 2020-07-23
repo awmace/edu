@@ -100,8 +100,13 @@ class SendMessageAPIView(APIView):
 
         # 4. 调用方法  完成短信的发送
         try:
-            message = Message(constants.API_KEY)
-            message.send_message(mobile, code)
+            # 通过celery异步执行短信发送
+            from my_task.sms.tasks import send_sms
+            # 调用任务函数  发布任务
+            send_sms.delay(mobile, code)
+
+            # message = Message(constants.API_KEY)
+            # message.send_message(mobile, code)
         except:
             return Response({"message": "短信发送失败"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 

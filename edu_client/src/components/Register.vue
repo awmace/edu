@@ -53,7 +53,7 @@
                     sessionStorage.remember_me = false
 
                     // 保存用户信息完成注册后 自动登录
-                    sessionStorage.removeItem("user_token");
+                    sessionStorage.removeItem("token");
                     sessionStorage.removeItem("user_id");
                     sessionStorage.removeItem("username");
                     sessionStorage.removeItem('password');
@@ -61,6 +61,8 @@
                     sessionStorage.user_id = response.data.id;
                     //sessionStorage.username = response.data.username;
                     sessionStorage.token = response.data.token;
+                    sessionStorage.time = Date.parse(new Date()) / 1000
+                    sessionStorage.exits = true
                     // 给前端显示用的用户名
                     localStorage.username = response.data.username;
 
